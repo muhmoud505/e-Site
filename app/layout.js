@@ -1,13 +1,26 @@
 import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "متجر الأناقة",
-  description: "تسوق بأناقة وثقة",
+  description: "تسوق أحدث صيحات الموضة. اكتشف مجموعتنا الحصرية من المنتجات عالية الجودة بأسعار منافسة.",
   manifest: "/manifest.json",
+  openGraph: {
+    title: "متجر الأناقة",
+    description: "تسوق بأناقة وثقة",
+    url: "https://your-website.com", // Replace with your actual domain
+    siteName: "متجر الأناقة",
+    images: [
+      // Add a URL to a featured image for social sharing
+      // { url: 'https://your-website.com/og-image.png', width: 800, height: 600 },
+    ],
+    locale: 'ar_SA',
+    type: 'website',
+  },
+};
+
+export const viewport = {
   themeColor: "#8B5CF6",
 };
 
@@ -17,13 +30,7 @@ export default function RootLayout({ children }) {
       <body>
         <StoreProvider>
           <Toaster />
-          <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          {children}
         </StoreProvider>
       </body>
     </html>

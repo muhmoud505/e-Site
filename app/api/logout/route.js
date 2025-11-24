@@ -1,23 +1,20 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import db from '../../../lib/db';
+import { cookies } from 'next/headers';
 
-export async function POST() {
+/**
+ * Handles POST requests to /api/logout to clear the session cookie.
+ * @param {import('next/server').NextRequest} request
+ */
+export async function POST(request) {
   const cookieStore = cookies();
-  const refreshToken = cookieStore.get('refresh_token')?.value;
 
-  // Invalidate the refresh token in the database
-  if (refreshToken) {
-    await db.query('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]);
-  }
-
-  // Clear the cookies
+  // To "delete" a cookie, we set it again with an expiration date in the past.
   cookieStore.set('session_token', '', {
     httpOnly: true,
-    expires: new Date(0),
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0), // Set expiration to the past
     path: '/',
   });
-  cookieStore.set('refresh_token', '', { httpOnly: true, expires: new Date(0), path: '/' });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ message: 'Logout successful' }, { status: 200 });
 }

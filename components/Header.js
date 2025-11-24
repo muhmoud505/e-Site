@@ -4,6 +4,9 @@ import { getSession } from '@/lib/session';
 import LogoutButton from './LogoutButton';
 import SearchForm from './SearchForm';
 
+// This tells Next.js to render this component dynamically because it reads cookies.
+export const dynamic = 'force-dynamic';
+
 const Header = async () => {
   const session = await getSession();
 
@@ -36,10 +39,17 @@ const Header = async () => {
 
             {session ? (
               <>
-                <Link href="/dashboard" className="flex items-center gap-2">
-                  <User className="w-6 h-6 text-gray-600" />
-                  <span className="hidden sm:inline">حسابي</span>
-                </Link>
+                {session.role === 'admin' ? (
+                  <Link href="/admin" className="flex items-center gap-2">
+                    <User className="w-6 h-6 text-purple-600" />
+                    <span className="hidden sm:inline font-semibold text-purple-700">لوحة التحكم</span>
+                  </Link>
+                ) : (
+                  <Link href="/dashboard" className="flex items-center gap-2">
+                    <User className="w-6 h-6 text-gray-600" />
+                    <span className="hidden sm:inline">حسابي</span>
+                  </Link>
+                )}
                 <LogoutButton />
               </>
             ) : (

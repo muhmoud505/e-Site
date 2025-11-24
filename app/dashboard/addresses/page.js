@@ -39,7 +39,7 @@ export default async function AddressesPage() {
 
     const [addresses] = await db.query(
         'SELECT id, country, city, street, building_number, is_default FROM user_addresses WHERE user_id = ? ORDER BY created_at DESC',
-        [session.userId]
+        [session.id]
     );
 
     return (

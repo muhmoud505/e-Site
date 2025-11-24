@@ -29,7 +29,7 @@ export async function updateSettings(prevState, formData) {
 
   const { fullname, mobile } = validatedFields.data;
 
-  await db.query('UPDATE users SET fullname = ?, mobile = ? WHERE id = ?', [fullname, mobile, session.userId]);
+  await db.query('UPDATE users SET fullname = ?, mobile = ? WHERE id = ?', [fullname, mobile, session.id]);
   revalidatePath('/dashboard/settings'); // Re-fetch data on the page
   return { message: 'تم تحديث الإعدادات بنجاح!', status: 'success' };
 }
@@ -58,7 +58,7 @@ export async function updatePassword(prevState, formData) {
 
   const { currentPassword, newPassword } = validatedFields.data;
 
-  const [[user]] = await db.query('SELECT password FROM users WHERE id = ?', [session.userId]);
+  const [[user]] = await db.query('SELECT password FROM users WHERE id = ?', [session.id]);
 
   const passwordsMatch = await bcrypt.compare(currentPassword, user.password);
   if (!passwordsMatch) {
@@ -66,7 +66,7 @@ export async function updatePassword(prevState, formData) {
   }
 
   const newPasswordHash = await bcrypt.hash(newPassword, 10);
-  await db.query('UPDATE users SET password = ? WHERE id = ?', [newPasswordHash, session.userId]);
+  await db.query('UPDATE users SET password = ? WHERE id = ?', [newPasswordHash, session.id]);
 
   return { message: 'تم تحديث كلمة المرور بنجاح!', status: 'success' };
 }

@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   // Fetch current user data to pre-fill the form
   const [[user]] = await db.query(
     'SELECT fullname, email, mobile FROM users WHERE id = ?',
-    [session.userId]
+    [session.id]
   );
 
   return (

@@ -10,7 +10,7 @@ export default async function OrdersPage() {
      FROM orders 
      WHERE user_id = ? 
      ORDER BY order_date DESC`,
-    [session.userId]
+    [session.id]
   );
 
   return (

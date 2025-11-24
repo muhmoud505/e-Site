@@ -17,11 +17,14 @@ const actionTypes = {
   TOGGLE_WISHLIST: 'TOGGLE_WISHLIST',
   SET_LOADING: 'SET_LOADING',
   CLEAR_CART: 'CLEAR_CART',
+  LOGIN_USER: 'LOGIN_USER',
+  LOGOUT_USER: 'LOGOUT_USER',
 };
 
 const initialState = {
   cart: [],
   wishlist: [],
+  user: null,
   isStoreLoading: true,
 };
 
@@ -75,6 +78,17 @@ function storeReducer(state, action) {
       return { ...state, cart: [] };
     }
 
+    case actionTypes.LOGIN_USER: {
+      toast.success(`Welcome, ${action.payload.user.fullname}!`);
+      return { ...state, user: action.payload.user };
+    }
+    case actionTypes.LOGOUT_USER: {
+      // Clear user from state and also from localStorage
+      localStorage.removeItem('user');
+      toast.success('تم تسجيل الخروج بنجاح.');
+      return { ...state, user: null, cart: [], wishlist: [] };
+    }
+
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -88,11 +102,13 @@ export function StoreProvider({ children }) {
     try {
       const savedCart = localStorage.getItem('cart');
       const savedWishlist = localStorage.getItem('wishlist');
+      const savedUser = localStorage.getItem('user');
       dispatch({
         type: actionTypes.SET_STATE_FROM_LOCALSTORAGE,
         payload: {
           cart: savedCart ? JSON.parse(savedCart) : [],
           wishlist: savedWishlist ? JSON.parse(savedWishlist) : [],
+          user: savedUser ? JSON.parse(savedUser) : null,
         },
       });
     } catch (error) {
@@ -106,8 +122,13 @@ export function StoreProvider({ children }) {
     if (!state.isStoreLoading) {
       localStorage.setItem('cart', JSON.stringify(state.cart));
       localStorage.setItem('wishlist', JSON.stringify(state.wishlist));
+      if (state.user) {
+        localStorage.setItem('user', JSON.stringify(state.user));
+      } else {
+        localStorage.removeItem('user');
+      }
     }
-  }, [state.cart, state.wishlist, state.isStoreLoading]);
+  }, [state.cart, state.wishlist, state.user, state.isStoreLoading]);
 
   const addToCart = (product, quantity = 1) => {
     dispatch({ type: actionTypes.ADD_TO_CART, payload: { product, quantity } });
@@ -129,6 +150,24 @@ export function StoreProvider({ children }) {
     dispatch({ type: actionTypes.TOGGLE_WISHLIST, payload: { product } });
   };
 
+  const loginUser = (userData) => {
+    dispatch({ type: actionTypes.LOGIN_USER, payload: { user: userData } });
+  };
+
+  const logoutUser = () => {
+    // First, call the API to clear the server session cookie
+    fetch('/api/logout', { method: 'POST' })
+      .then(response => {
+        if (response.ok) {
+          // Then, update the client-side state
+          dispatch({ type: actionTypes.LOGOUT_USER });
+          // Finally, do a full page reload to ensure all server components are updated
+          window.location.href = '/login';
+        }
+      })
+      .catch(error => console.error('Logout failed:', error));
+  };
+
   const totalCartItems = state.cart.reduce((total, item) => total + item.quantity, 0);
   const totalCartPrice = state.cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -141,6 +180,8 @@ export function StoreProvider({ children }) {
     updateCartQuantity,
     clearCart,
     toggleWishlist,
+    loginUser,
+    logoutUser,
   };
 
   return (

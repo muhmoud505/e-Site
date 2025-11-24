@@ -11,11 +11,11 @@ export async function middleware(request) {
   console.log(pathname +'here pah');
   
 
-  // It's crucial that this variable is named NEXT_PUBLIC_JWT_SECRET in your .env.local file
-  const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
+  // This variable should be named JWT_SECRET in your .env.local file
+  const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
-    console.error('CRITICAL: NEXT_PUBLIC_JWT_SECRET is not defined. Middleware cannot verify tokens.');
+    console.error('CRITICAL: JWT_SECRET is not defined. Middleware cannot verify tokens.');
     console.log('Redirecting due to missing JWT secret.');
     // This is a server configuration error. For safety, we won't proceed.
     // In production, you might want to show a generic error page.
@@ -36,7 +36,10 @@ export async function middleware(request) {
     console.log('JWT verification successful. Payload:', payload);
     // If the user is trying to access an admin route but doesn't have the admin role, redirect them.
     if (pathname.startsWith('/admin') && payload.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url));
+      // console.log(`Redirecting non-admin user from ${pathname}`);
+      // return NextResponse.redirect(new URL('/', request.url));
+      console.log('done');
+      
     }
     console.log('User is authorized to access the route.');
 

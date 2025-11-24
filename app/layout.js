@@ -1,6 +1,8 @@
 import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
 import { Toaster } from "react-hot-toast";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "متجر الأناقة",
@@ -30,7 +32,11 @@ export default function RootLayout({ children }) {
       <body>
         <StoreProvider>
           <Toaster />
-          {children}
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
         </StoreProvider>
       </body>
     </html>

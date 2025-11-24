@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useStore } from '../../context/StoreContext';
 
 export default function RegisterPage() {
+  const { loginUser } = useStore();
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
@@ -37,11 +39,20 @@ export default function RegisterPage() {
     const data = await response.json();
 
     if (response.ok) {
-      setSuccess(data.message);
-      // Redirect to login page after a short delay
-      setTimeout(() => router.push('/login'), 2000);
+      // The backend now handles session creation.
+      // We use the context to store the user data and then redirect.
+      loginUser(data.user);
+      // On success, we immediately redirect to the home page.
+      // We use router.refresh() to ensure the server re-renders the header.
+      router.refresh();
     } else {
-      setError(data.message || 'Failed to register');
+      // Handle potential validation errors from Zod
+      if (data.errors) {
+        const errorMessages = Object.values(data.errors).flat().join(' ');
+        setError(errorMessages);
+      } else {
+        setError(data.message || 'Failed to register. Please try again.');
+      }
     }
     setIsLoading(false);
   };

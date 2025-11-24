@@ -5,6 +5,9 @@ import { Filter } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import { products, categories } from '@/lib/data';
 
+// This forces the page to be rendered dynamically on the server
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
 

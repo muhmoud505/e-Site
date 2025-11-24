@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
+import { SignJWT } from 'jose';
 import db from '../../../lib/db';
+import { cookies } from 'next/headers';
 
 /**
  * Handles POST requests to /api/register
@@ -39,13 +41,43 @@ export async function POST(request) {
     const passwordHash = await bcrypt.hash(password, saltRounds);
     
     // Insert the new user into the database
-    await db.query(
+    const [result] = await db.query(
       'INSERT INTO users (fullname, email, password, gender, mobile, role) VALUES (?, ?, ?, ?, ?, ?)',
       [fullname, email, passwordHash, gender, mobile, 'user']
     );
 
-    // For security, don't return the password hash or other sensitive info.
-    return NextResponse.json({ message: 'User registered successfully' }, { status: 201 });
+    const newUserId = result.insertId;
+
+    // Fetch the newly created user's data (excluding password) to create the session
+    const [[newUser]] = await db.query(
+      'SELECT id, fullname, email, role FROM users WHERE id = ?',
+      [newUserId]
+    );
+
+    if (!newUser) {
+      return NextResponse.json({ message: 'Failed to retrieve user after creation.' }, { status: 500 });
+    }
+
+    // --- Create a JWT session token ---
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const alg = 'HS256';
+
+    const sessionToken = await new SignJWT(newUser)
+      .setProtectedHeader({ alg })
+      .setIssuedAt()
+      .setExpirationTime('30d') // Set session to expire in 30 days
+      .sign(secret);
+
+    const cookieStore = cookies();
+    // Set the session token in an HTTP-only cookie
+    cookieStore.set('session_token', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/',
+    });
+
+    return NextResponse.json({ user: newUser }, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);
     // Check for specific database errors, like unique constraint violations

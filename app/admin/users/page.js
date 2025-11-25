@@ -1,4 +1,5 @@
 import db from '@/lib/db';
+import Link from 'next/link';
 
 export default async function AdminUsersPage() {
   // Fetch all users directly from the database
@@ -41,8 +42,9 @@ export default async function AdminUsersPage() {
                   <span className="md:hidden font-semibold">تاريخ الانضمام: </span>{user.join_date}
                 </td>
                 <td className="px-5 py-3 block md:table-cell text-sm" data-label="الإجراءات">
-                  {/* Action buttons like Edit or Delete can be added here */}
-                  <button className="text-purple-600 hover:text-purple-900">تعديل</button>
+                  <Link href={`/admin/users/${user.id}/edit`} className="text-purple-600 hover:text-purple-900">
+                    تعديل
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -52,4 +54,3 @@ export default async function AdminUsersPage() {
     </div>
   );
 }
-

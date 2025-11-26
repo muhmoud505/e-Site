@@ -3,7 +3,7 @@ import { StoreProvider } from "@/context/StoreContext";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
+export const dynamic = 'force-dynamic';
 export const metadata = {
   title: "متجر الأناقة",
   description: "تسوق أحدث صيحات الموضة. اكتشف مجموعتنا الحصرية من المنتجات عالية الجودة بأسعار منافسة.",

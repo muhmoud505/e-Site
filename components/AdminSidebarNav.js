@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users } from 'lucide-react';
+import { Users, ShoppingBag } from 'lucide-react';
 import LogoutButton from './LogoutButton';
 
 const navLinks = [
   { href: '/admin/users', label: 'المستخدمون', icon: Users },
-  // Add more admin links here in the future (e.g., Products, Orders)
+  { href: '/admin/products', label: 'المنتجات', icon: ShoppingBag },
 ];
 
 export default function AdminSidebarNav() {

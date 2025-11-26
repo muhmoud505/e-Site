@@ -2,6 +2,7 @@
 
 import { Heart, Star } from 'lucide-react';
 import { useStore } from '@/context/StoreContext';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const ProductCard = ({ product }) => {
@@ -13,9 +14,14 @@ const ProductCard = ({ product }) => {
       <div className="bg-white rounded-xl shadow-lg overflow-hidden group-hover:shadow-xl transition-shadow">
         {/* Product Image */}
         <div className="relative h-64 bg-gray-200 overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center text-6xl">
-            🛍️
-          </div>
+          <Image
+            // If product.image is a full URL, use it. Otherwise, assume it's in /public.
+            src={product.image || `https://via.placeholder.com/400?text=${encodeURIComponent(product.name)}`}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
 
           {/* Tags */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">

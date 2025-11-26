@@ -1,18 +1,23 @@
-import { ShoppingCart, Heart, User, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import LogoutButton from './LogoutButton';
 import SearchForm from './SearchForm';
+import HeaderIcons from './HeaderIcons';
+import { ShoppingCart } from 'lucide-react';
 
 // This tells Next.js to render this component dynamically because it reads cookies.
 export const dynamic = 'force-dynamic';
 
 const Header = async () => {
-  const session = await getSession();
+  let session = null;
+  
+  try {
+    session = await getSession();
+  } catch (error) {
+    console.error('Error fetching session in Header:', error);
+    // Continue without session - user will see login button
+  }
 
   // Since useStore is a client hook, we can't use it directly here.
-  // We'll wrap the parts that need it in a client component.
-  // For now, let's focus on the login/logout state.
 
   return (
     <header className="bg-white shadow-md">
@@ -32,33 +37,7 @@ const Header = async () => {
           </div>
 
           {/* Store Icons */}
-          <div className="flex items-center space-x-5 order-2 md:order-3">
-            {/* These can be wrapped in a client component to get live cart/wishlist counts */}
-            <Link href="/wishlist" className="relative cursor-pointer"><Heart className="w-7 h-7 text-gray-600 hover:text-red-500" /></Link>
-            <Link href="/checkout" className="relative cursor-pointer"><ShoppingCart className="w-7 h-7 text-gray-600 hover:text-purple-600" /></Link>
-
-            {session ? (
-              <>
-                {session.role === 'admin' ? (
-                  <Link href="/admin" className="flex items-center gap-2">
-                    <User className="w-6 h-6 text-purple-600" />
-                    <span className="hidden sm:inline font-semibold text-purple-700">لوحة التحكم</span>
-                  </Link>
-                ) : (
-                  <Link href="/dashboard" className="flex items-center gap-2">
-                    <User className="w-6 h-6 text-gray-600" />
-                    <span className="hidden sm:inline">حسابي</span>
-                  </Link>
-                )}
-                <LogoutButton />
-              </>
-            ) : (
-              <Link href="/login" className="flex items-center gap-2">
-                <LogIn className="w-6 h-6 text-gray-600" />
-                <span className="hidden sm:inline">تسجيل الدخول</span>
-              </Link>
-            )}
-          </div>
+          <HeaderIcons session={session} />
         </div>
       </div>
     </header>

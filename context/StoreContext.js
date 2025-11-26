@@ -44,19 +44,16 @@ function storeReducer(state, action) {
               : item
           )
         : [...state.cart, { ...product, quantity }];
-      toast.success('تم إضافة المنتج للسلة!');
       return { ...state, cart: newCart };
     }
     case actionTypes.REMOVE_FROM_CART: {
       const newCart = state.cart.filter(item => item.id !== action.payload.productId);
-      toast.success('تم إزالة المنتج من السلة.');
       return { ...state, cart: newCart };
     }
     case actionTypes.UPDATE_CART_QUANTITY: {
       const { productId, quantity } = action.payload;
       if (quantity <= 0) {
         const newCart = state.cart.filter(item => item.id !== productId);
-        toast.success('تم إزالة المنتج من السلة.');
         return { ...state, cart: newCart };
       }
       const newCart = state.cart.map(item =>
@@ -70,22 +67,20 @@ function storeReducer(state, action) {
       const newWishlist = isWishlisted
         ? state.wishlist.filter(item => item.id !== product.id)
         : [...state.wishlist, product];
-      toast.success(isWishlisted ? 'تم إزالة المنتج من قائمة الرغبات.' : 'تم إضافة المنتج إلى قائمة الرغبات!');
       return { ...state, wishlist: newWishlist };
     }
     case actionTypes.CLEAR_CART: {
-      toast.success('تم تفريغ السلة.');
       return { ...state, cart: [] };
     }
 
     case actionTypes.LOGIN_USER: {
-      toast.success(`Welcome, ${action.payload.user.fullname}!`);
       return { ...state, user: action.payload.user };
     }
     case actionTypes.LOGOUT_USER: {
       // Clear user from state and also from localStorage
       localStorage.removeItem('user');
-      toast.success('تم تسجيل الخروج بنجاح.');
+      localStorage.removeItem('cart');
+      localStorage.removeItem('wishlist');
       return { ...state, user: null, cart: [], wishlist: [] };
     }
 
@@ -131,27 +126,38 @@ export function StoreProvider({ children }) {
   }, [state.cart, state.wishlist, state.user, state.isStoreLoading]);
 
   const addToCart = (product, quantity = 1) => {
+    toast.success('تم إضافة المنتج للسلة!');
     dispatch({ type: actionTypes.ADD_TO_CART, payload: { product, quantity } });
   };
 
   const removeFromCart = (productId) => {
+    toast.success('تم إزالة المنتج من السلة.');
     dispatch({ type: actionTypes.REMOVE_FROM_CART, payload: { productId } });
   };
 
   const updateCartQuantity = (productId, quantity) => {
+    if (quantity <= 0) {
+      toast.success('تم إزالة المنتج من السلة.');
+    }
     dispatch({ type: actionTypes.UPDATE_CART_QUANTITY, payload: { productId, quantity } });
   };
 
   const clearCart = () => {
+    toast.success('تم تفريغ السلة.');
     dispatch({ type: actionTypes.CLEAR_CART });
   };
 
   const toggleWishlist = (product) => {
+    const isWishlisted = state.wishlist.find(item => item.id === product.id);
+    toast.success(isWishlisted ? 'تم إزالة المنتج من قائمة الرغبات.' : 'تم إضافة المنتج إلى قائمة الرغبات!');
     dispatch({ type: actionTypes.TOGGLE_WISHLIST, payload: { product } });
   };
 
   const loginUser = (userData) => {
+    toast.success(`مرحباً بك، ${userData.fullname}!`);
     dispatch({ type: actionTypes.LOGIN_USER, payload: { user: userData } });
+    // Redirect to the homepage to force a reload of server components like the Header
+    window.location.href = '/';
   };
 
   const logoutUser = () => {
@@ -159,10 +165,13 @@ export function StoreProvider({ children }) {
     fetch('/api/logout', { method: 'POST' })
       .then(response => {
         if (response.ok) {
+          toast.success('تم تسجيل الخروج بنجاح.');
           // Then, update the client-side state
           dispatch({ type: actionTypes.LOGOUT_USER });
-          // Finally, do a full page reload to ensure all server components are updated
-          window.location.href = '/login';
+          // Redirect to home and refresh to update server components
+          window.location.href = '/';
+        } else {
+          toast.error('فشل تسجيل الخروج.');
         }
       })
       .catch(error => console.error('Logout failed:', error));

@@ -1,7 +1,7 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { products } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 import { SearchX } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +9,23 @@ import Link from 'next/link';
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q');
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   if (!query) {
     // Optionally, you could redirect to the homepage or show a message
@@ -16,6 +33,14 @@ export default function SearchPage() {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">الرجاء إدخال مصطلح للبحث.</h1>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <h1 className="text-2xl font-bold">...جاري البحث</h1>
       </div>
     );
   }

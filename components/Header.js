@@ -1,23 +1,31 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { getSession } from '@/lib/session';
 import SearchForm from './SearchForm';
 import HeaderIcons from './HeaderIcons';
 import { ShoppingCart } from 'lucide-react';
 
-// This tells Next.js to render this component dynamically because it reads cookies.
-export const dynamic = 'force-dynamic';
+const Header = () => {
+  const [session, setSession] = useState(null);
+  const pathname = usePathname();
 
-const Header = async () => {
-  let session = null;
-  
-  try {
-    session = await getSession();
-  } catch (error) {
-    console.error('Error fetching session in Header:', error);
-    // Continue without session - user will see login button
-  }
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setSession(data);
+        }
+      } catch (error) {
+        console.error('Error fetching session in Header:', error);
+      }
+    };
+    fetchSession();
+  }, []);
 
-  // Since useStore is a client hook, we can't use it directly here.
 
   return (
     <header className="bg-white shadow-md">
@@ -32,9 +40,11 @@ const Header = async () => {
           </Link>
 
           {/* Search Bar */}
-          <div className="flex-1 order-3 md:order-2 w-full md:w-auto min-w-[200px] max-w-lg mx-auto">
-            <SearchForm />
-          </div>
+          {pathname === '/' && (
+            <div className="flex-1 order-3 md:order-2 w-full md:w-auto min-w-[200px] max-w-lg mx-auto">
+              <SearchForm />
+            </div>
+          )}
 
           {/* Store Icons */}
           <HeaderIcons session={session} />

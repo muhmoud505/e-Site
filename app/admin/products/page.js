@@ -1,22 +1,50 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2 } from 'lucide-react';
+import ConfirmationModal from '@/components/ConfirmationModal';
 
-export const dynamic = 'force-dynamic';
+function ProductsPage() {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const router = useRouter();
 
-async function getProducts() {
-  // On the server, we need to use an absolute URL for fetch
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/products`, { cache: 'no-store' });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch products');
-  }
-  return res.json();
-}
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setIsModalOpen(true);
+  };
 
-async function ProductsPage() {
-  const products = await getProducts();
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    await fetch(`/api/products/${productToDelete.id}`, { method: 'DELETE' });
+    setIsModalOpen(false);
+    setProductToDelete(null);
+    router.refresh(); // Re-fetches data on the server and re-renders
+    // Optimistic UI update
+    setProducts(products.filter(p => p.id !== productToDelete.id));
+  };
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
@@ -28,6 +56,10 @@ async function ProductsPage() {
         </Link>
       </div>
 
+      {isLoading && <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 animate-spin" /></div>}
+      {error && <div className="text-center text-red-500 p-8">{error}</div>}
+
+      {!isLoading && !error && (
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
         <table className="w-full min-w-[800px] text-right">
           <thead className="bg-gray-50 border-b-2 border-gray-200">
@@ -70,8 +102,8 @@ async function ProductsPage() {
                     <Link href={`/admin/products/edit/${product.id}`} className="text-purple-600 hover:text-purple-800">
                       <Edit className="w-5 h-5" />
                     </Link>
-                    {/* The delete button would trigger a modal for confirmation */}
-                    <button className="text-red-600 hover:text-red-800">
+                    {/* This button now triggers the confirmation modal */}
+                    <button onClick={() => handleDeleteClick(product)} className="text-red-600 hover:text-red-800">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
@@ -79,13 +111,22 @@ async function ProductsPage() {
               </tr>
             ))}
           </tbody>
-        </table> 
+        </table>
         {products && products.length === 0 && (
           <div className="text-center p-8 text-gray-500">
             <p>لا توجد منتجات لعرضها. <Link href="/admin/products/new" className="text-purple-600 hover:underline">أضف منتجًا جديدًا</Link>.</p>
           </div>
         )}
       </div>
+      )}
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="تأكيد الحذف"
+        message={`هل أنت متأكد أنك تريد حذف المنتج "${productToDelete?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
+      />
     </div>
   );
 }

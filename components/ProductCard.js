@@ -1,111 +1,37 @@
-"use client";
-
-import { Heart, Star } from 'lucide-react';
-import { useStore } from '@/context/StoreContext';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
+import StarRating from './StarRating'; // Import the new component
 
-const ProductCard = ({ product }) => {
-  const { addToCart, toggleWishlist, wishlist } = useStore();
-  const isWishlisted = !!wishlist.find(item => item.id === product.id);
+const PLACEHOLDER_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+export default function ProductCard({ product }) {
+  // Assuming you'll add a 'slug' field to your products for clean URLs
+  const productUrl = `/products/${product.slug || product.id}`;
 
   return (
-    <Link href={`/products/${product.id}`} className="block group">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden group-hover:shadow-xl transition-shadow">
-        {/* Product Image */}
-        <div className="relative h-64 bg-gray-200 overflow-hidden">
-          <Image
-            // If product.image is a full URL, use it. Otherwise, assume it's in /public.
-            src={product.image || `https://via.placeholder.com/400?text=${encodeURIComponent(product.name)}`}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-
-          {/* Tags */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {product.isNew && (
-              <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">
-                جديد
-              </span>
-            )}
-            {product.discount > 0 && (
-              <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                -{product.discount}%
-              </span>
-            )}
-          </div>
-
-          {/* Wishlist Icon */}
-          <button
-            onClick={(e) => {
-              e.preventDefault(); // Prevent link navigation
-              toggleWishlist(product);
-            }}
-            className="absolute top-4 right-4 p-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isWishlisted
-                  ? 'text-red-500 fill-current'
-                  : 'text-gray-600'
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Product Info */}
-        <div className="p-6">
-          <h3 className="text-lg font-bold mb-2 text-gray-800">{product.name}</h3>
-
-          {/* Rating */}
-          <div className="flex items-center mb-3">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.floor(product.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600 mr-2">({product.reviews})</span>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <span className="text-2xl font-bold text-purple-600">{product.price} ريال</span>
-              {product.originalPrice > product.price && (
-                <span className="text-sm text-gray-500 line-through mr-2">
-                  {product.originalPrice} ريال
-                </span>
-              )}
-            </div>
-            <span className={`text-sm ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
-              {product.inStock ? 'متوفر' : 'غير متوفر'}
-            </span>
-          </div>
-
-          {/* Action Buttons */}
-          <button
-            onClick={(e) => {
-              e.preventDefault(); // Prevent link navigation
-              addToCart(product);
-            }}
-            disabled={!product.inStock}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${product.inStock ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-          >
-            {product.inStock ? 'أضف للسلة' : 'غير متوفر'}
-          </button>
+    <Link href={productUrl} className="group relative block border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+      <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-200">
+        <Image
+          src={product.image || PLACEHOLDER_IMAGE}
+          alt={product.name}
+          width={400}
+          height={400}
+          className="w-full h-full object-cover object-center group-hover:opacity-75 transition-opacity"
+        />
+      </div>
+      <div className="p-4 flex flex-col flex-grow">
+        <h3 className="text-lg font-semibold text-gray-800 flex-grow">
+          {product.name}
+        </h3>
+        {/* Interactive Star Rating */}
+        <StarRating productId={product.id} initialRating={product.rating} reviewCount={product.reviewCount} />
+        <div className="mt-2 flex items-baseline">
+          {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+            <p className="text-sm text-gray-500 line-through ml-2">{parseFloat(product.originalPrice).toFixed(2)} ر.س</p>
+          )}
+          <p className="text-xl font-bold text-purple-600">{parseFloat(product.price).toFixed(2)} ر.س</p>
         </div>
       </div>
     </Link>
   );
-};
-
-export default ProductCard;
+}

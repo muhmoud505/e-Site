@@ -1,8 +1,8 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import { updateSettings } from '@/app/dashboard/settings/actions';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useActionState } from 'react';
 import { toast } from 'react-hot-toast';
 
 const initialState = {
@@ -20,7 +20,7 @@ function SubmitButton() {
 }
 
 export default function SettingsForm({ user }) {
-  const [state, formAction] = useFormState(updateSettings, initialState);
+  const [state, formAction] = useActionState(updateSettings, initialState);
   const prevStateRef = useRef(state);
 
   useEffect(() => {

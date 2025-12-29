@@ -5,26 +5,17 @@ import { jwtVerify } from 'jose';
  * @param {import('next/server').NextRequest} request
  */
 export async function middleware(request) {
-  const sessionToken = request.cookies.get('session_token')?.value;
-  console.log('Session Token:', sessionToken);
+  const sessionToken = request.cookies.get('session')?.value;
   const { pathname } = request.nextUrl;
-  console.log(pathname +'here pah');
-  
 
   // This variable should be named JWT_SECRET in your .env.local file
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
     console.error('CRITICAL: JWT_SECRET is not defined. Middleware cannot verify tokens.');
-    console.log('Redirecting due to missing JWT secret.');
-    // This is a server configuration error. For safety, we won't proceed.
-    // In production, you might want to show a generic error page.
     return NextResponse.redirect(new URL('/login?error=server_config', request.url));
   }
 
-  // Since the matcher is defined in `config`, this middleware only runs on protected routes.
-  // The first step is to check for a session token.
-  console.log('Checking for session token...');
   if (!sessionToken) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -33,19 +24,14 @@ export async function middleware(request) {
     const secret = new TextEncoder().encode(jwtSecret);
     const { payload } = await jwtVerify(sessionToken, secret);
 
-    console.log('JWT verification successful. Payload:', payload);
     // If the user is trying to access an admin route but doesn't have the admin role, redirect them.
     if (pathname.startsWith('/admin') && payload.role !== 'admin') {
-      // console.log(`Redirecting non-admin user from ${pathname}`);
-      // return NextResponse.redirect(new URL('/', request.url));
-      console.log('done');
-      
+      // Redirect non-admins from admin routes to the homepage.
+      return NextResponse.redirect(new URL('/', request.url));
     }
-    console.log('User is authorized to access the route.');
 
     return NextResponse.next();
   } catch (err) {
-    console.error('JWT Verification Error:', err.message);
     // If token verification fails (expired, invalid), redirect to login.
     return NextResponse.redirect(new URL('/login', request.url));
   }

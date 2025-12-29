@@ -1,5 +1,5 @@
-import { categories } from '@/lib/data';
 import ProductList from '@/components/ProductList';
+import Link from 'next/link';
 import db from "@/lib/db";
 
 // This forces the page to be rendered dynamically on the server
@@ -7,11 +7,28 @@ export const dynamic = 'force-dynamic';
 
 async function getProducts() {
   try {
-    const [products] = await db.query(
-      `SELECT p.id, p.name, p.description, p.price, p.stock as inStock, p.image, c.name as category FROM products p LEFT JOIN categories c ON p.category_id = c.id`
-    );
-    // Mocking some data that is not in the DB schema yet
-    return products.map(p => ({ ...p, originalPrice: p.price * 1.25, rating: 4.5, reviews: 95, isNew: false, discount: 20 }));
+    const [rows] = await db.query(`
+      SELECT 
+        p.*, 
+        p.stock > 0 as inStock,
+        c.name as category,
+        p.original_price as originalPrice,
+        (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC LIMIT 1) as image, 
+        COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.sort_order ASC), '') as images
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN product_images pi ON p.id = pi.product_id
+      GROUP BY p.id
+      ORDER BY p.created_at DESC
+      LIMIT 20
+    `);
+    // Mocking some data that is not in the DB schema yet.
+    // The originalPrice is now fetched from the database.
+    return rows.map(p => {
+      // Rename the 'quantity' column from the DB to 'stock' to avoid conflicts.
+      const { quantity, ...rest } = p;
+      return { ...rest, stock: quantity, images: p.images ? p.images.split(',') : [], rating: 4.5, reviewCount: 95 };
+    });
   } catch (error) {
     console.error("Failed to fetch products:", error);
     return [];
@@ -20,6 +37,13 @@ async function getProducts() {
 
 export default async function Home() {
   const products = await getProducts();
+
+  // Dynamically create a unique list of categories from the fetched products
+  const categories = products
+    .map(p => ({ id: p.category_id, name: p.category }))
+    .filter((value, index, self) => 
+      value.name && self.findIndex(c => c.id === value.id) === index
+    );
 
   return (
     <>
@@ -34,7 +58,9 @@ export default async function Home() {
                 <a href="#products" className="bg-yellow-400 text-purple-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 text-center">
                   تسوق الآن
                 </a>
-                <button className="border-2 border-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg font-bold text-lg">العروض الخاصة</button>
+                <Link href="/sales" className="border-2 border-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg font-bold text-lg text-center">
+                  العروض الخاصة
+                </Link>
               </div>
             </div>
             <div className="text-center">

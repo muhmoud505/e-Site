@@ -1,44 +1,30 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from './ProductCard';
 
-const ProductList = ({ products, categories }) => {
-  const [selectedCategory, setSelectedCategory] = useState('الكل');
+export default function ProductList({ products, categories = [] }) {
+  const [filter, setFilter] = useState('all');
 
-  const filteredProducts =
-    selectedCategory === 'الكل'
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  const filteredProducts = products.filter(product => 
+    filter === 'all' || product.category === filter
+  );
 
   return (
-    <>
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">تسوق حسب الفئة</h2>
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full font-semibold transition-colors ${selectedCategory === category ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-purple-100'}`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-        {filteredProducts.map(product => (
+    <div>
+      <div className="flex justify-center space-x-4 space-x-reverse mb-8">
+        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full font-semibold ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-200'}`}>الكل</button>
+        {categories.map(category => (
+          <button key={category.id} onClick={() => setFilter(category.name)} className={`px-4 py-2 rounded-full font-semibold ${filter === category.name ? 'bg-purple-600 text-white' : 'bg-gray-200'}`}>
+            {category.name}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+        {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-    </>
+    </div>
   );
-};
-
-export default ProductList;
+}

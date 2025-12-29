@@ -1,15 +1,19 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
-import { useStore } from '@/context/StoreContext';
+import { logout } from '@/app/actions';
 
 export default function LogoutButton() {
-  const { logoutUser } = useStore();
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+  };
 
   return (
-    <button onClick={logoutUser} className="flex items-center gap-2">
-      <LogOut className="w-6 h-6 text-gray-600" />
-      <span className="hidden sm:inline">الخروج</span>
-    </button>
+    <form action={logout} onSubmit={handleLogout}>
+      <button type="submit" className="flex items-center gap-2 w-full text-right">
+        <LogOut className="w-5 h-5" />
+        <span className="hidden md:inline">الخروج</span>
+      </button>
+    </form>
   );
 }

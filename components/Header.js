@@ -1,31 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import SearchForm from './SearchForm';
 import HeaderIcons from './HeaderIcons';
 import { ShoppingCart } from 'lucide-react';
+import { useSafeSession } from './useSafeSession';
 
 const Header = () => {
-  const [session, setSession] = useState(null);
   const pathname = usePathname();
+  const { session } = useSafeSession();
 
   useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const res = await fetch('/api/auth/session');
-        if (res.ok) {
-          const data = await res.json();
-          setSession(data);
-        }
-      } catch (error) {
-        console.error('Error fetching session in Header:', error);
-      }
-    };
-    fetchSession();
-  }, []);
-
+    if (session) {
+      localStorage.setItem('user', JSON.stringify(session));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [session]);
 
   return (
     <header className="bg-white shadow-md">

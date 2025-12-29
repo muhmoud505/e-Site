@@ -68,16 +68,18 @@ export async function POST(request) {
       .setExpirationTime('30d') // Set session to expire in 30 days
       .sign(secret);
 
-    const cookieStore = cookies();
+    // Create the response first
+    const response = NextResponse.json({ user: newUser }, { status: 201 });
+
     // Set the session token in an HTTP-only cookie
-    cookieStore.set('session_token', sessionToken, {
+    response.cookies.set('session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     });
 
-    return NextResponse.json({ user: newUser }, { status: 201 });
+    return response;
   } catch (error) {
     console.error('Registration error:', error);
     // Check for specific database errors, like unique constraint violations

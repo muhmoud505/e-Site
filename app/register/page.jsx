@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useStore } from '../../context/StoreContext';
 
 export default function RegisterPage() {
-  const { loginUser } = useStore();
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
@@ -39,12 +37,10 @@ export default function RegisterPage() {
     const data = await response.json();
 
     if (response.ok) {
-      // The backend now handles session creation.
-      // We use the context to store the user data and then redirect.
-      loginUser(data.user);
-      // On success, we immediately redirect to the home page.
-      // We use router.refresh() to ensure the server re-renders the header.
+      // On success, the session cookie is already set by the server.
+      // We just need to refresh the page to update the UI (like the header).
       router.refresh();
+      router.push('/dashboard'); // Redirect to the dashboard after successful registration.
     } else {
       // Handle potential validation errors from Zod
       if (data.errors) {

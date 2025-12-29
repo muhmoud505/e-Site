@@ -1,8 +1,8 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import { updatePassword } from '@/app/dashboard/settings/actions';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useActionState } from 'react';
 import { toast } from 'react-hot-toast';
 
 const initialState = { message: null, status: null };
@@ -17,7 +17,7 @@ function SubmitButton() {
 }
 
 export default function PasswordForm() {
-  const [state, formAction] = useFormState(updatePassword, initialState);
+  const [state, formAction] = useActionState(updatePassword, initialState);
   const formRef = useRef(null);
 
   useEffect(() => {

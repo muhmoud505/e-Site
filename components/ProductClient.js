@@ -13,6 +13,13 @@ const ProductClient = ({ product }) => {
   const { addToCart } = useStore();
   const [selectedImage, setSelectedImage] = useState(product.images[0] || product.image);
   const [quantity, setQuantity] = useState(1);
+  const [rating, setRating] = useState(product.rating || 0);
+  const [reviewCount, setReviewCount] = useState(product.reviews || 0);
+
+  const handleReviewsUpdate = ({ count, rating }) => {
+    setReviewCount(count);
+    setRating(rating);
+  };
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -38,6 +45,7 @@ const ProductClient = ({ product }) => {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
+              quality={100}
               priority
             />
           </div>
@@ -64,7 +72,7 @@ const ProductClient = ({ product }) => {
         <div>
           <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
           <div className="mb-4">
-            <StarRating initialRating={product.rating} reviewCount={product.reviews} />
+            <StarRating initialRating={rating} reviewCount={reviewCount} />
           </div>
           <p className="text-gray-700 text-lg mb-6">{product.description || "لا يوجد وصف متاح لهذا المنتج."}</p>
           
@@ -105,7 +113,7 @@ const ProductClient = ({ product }) => {
         </div>
       </div>
       {/* Review Section */}
-      <ProductReviews product={product} />
+      <ProductReviews product={product} onReviewsUpdate={handleReviewsUpdate} />
     </>
   );
 };

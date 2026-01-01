@@ -10,7 +10,9 @@ async function getProduct(slug) {
         p.*, 
         p.stock > 0 as inStock,
         c.name as category,
-        COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.sort_order ASC), '') as images
+        COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.sort_order ASC), '') as images,
+        (SELECT COUNT(*) FROM reviews WHERE product_id = p.id) as reviewCount,
+        (SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE product_id = p.id) as averageRating
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN product_images pi ON p.id = pi.product_id
@@ -27,7 +29,7 @@ async function getProduct(slug) {
     // Rename the 'quantity' column from the DB to 'stock' to avoid conflicts.
     const { quantity, ...rest } = product;
     // Mocking some data that is not in the DB schema yet.
-    return { ...rest, stock: quantity, images: product.images.split(','), originalPrice: product.price * 1.25, rating: 4.5, reviews: 95 };
+    return { ...rest, stock: quantity, images: product.images.split(','), originalPrice: product.price * 1.25, rating: Number(product.averageRating), reviews: Number(product.reviewCount) };
 
   } catch (error) {
     console.error(`Failed to fetch product by slug ${slug}:`, error);

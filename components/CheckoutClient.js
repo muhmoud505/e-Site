@@ -1,13 +1,25 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useStore } from "@/context/StoreContext";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import CheckoutForm from "./CheckoutForm";
 import OrderSummary from "./OrderSummary";
+import { getAddresses } from "@/app/dashboard/addresses/actions";
 
-export default function CheckoutClient() {
+export default function CheckoutClient({ addresses: initialAddresses }) {
   const { cart, totalCartPrice, isStoreLoading } = useStore();
+  const [addresses, setAddresses] = useState(initialAddresses);
+
+  useEffect(() => {
+    if (initialAddresses === undefined) {
+      getAddresses()
+        .then((data) => setAddresses(data))
+        .catch((err) => console.error("Failed to fetch addresses", err));
+    }
+  }, [initialAddresses]);
+
   console.log('cart' + cart);
   
 
@@ -35,7 +47,7 @@ export default function CheckoutClient() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-      <CheckoutForm />
+      <CheckoutForm addresses={addresses} />
       <OrderSummary cart={cart} totalCartPrice={totalCartPrice} />
     </div>
   );

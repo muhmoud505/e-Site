@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { updateUserAction, deleteUserAction } from '@/app/admina/users/[id]/edit/actions';
 import ConfirmationModal from './ConfirmationModal';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Eye, EyeOff } from 'lucide-react';
 
 const initialState = { message: null, status: null };
 
@@ -24,6 +24,7 @@ export function EditUserForm({ user }) {
   const updateUserWithId = updateUserAction.bind(null, user.id);
   const [state, formAction] = useActionState(updateUserWithId, initialState);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (state?.status === 'success') {
@@ -81,13 +82,23 @@ export function EditUserForm({ user }) {
       </div>
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">كلمة المرور (اختياري)</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            id="password"
+            placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 pl-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-purple-600"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
       </div>
       <div>
         <label htmlFor="role" className="block text-sm font-medium text-gray-700">الدور</label>

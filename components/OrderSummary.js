@@ -49,12 +49,14 @@ const OrderSummary = ({ cart, totalCartPrice }) => {
         {cart.map((item) => {
           const itemPrice = safeParseFloat(item.price);
           const itemQuantity = safeParseInt(item.quantity);
+          // Try to get the image from item.image or the first image in item.images array
+          const imageSrc = item.image || (item.images && item.images[0]) || PLACEHOLDER_IMAGE;
           return (
           <div key={item.id} className="flex justify-between items-start" data-testid={`cart-item-${item.id}`}>
             <div className="flex items-start flex-grow">
               <div className="relative w-16 h-16 rounded-md me-4 overflow-hidden flex-shrink-0 bg-gray-100">
                 <Image
-                  src={item.image || PLACEHOLDER_IMAGE}
+                  src={imageSrc}
                   alt={item.name}
                   fill
                   sizes="64px"

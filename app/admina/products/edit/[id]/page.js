@@ -120,7 +120,7 @@ export default function EditProductPage() {
       }
 
       router.refresh();
-      router.push('/admin/products'); // Push after refresh
+      router.push('/admina/products'); // Push after refresh
 
     } catch (err) {
       setError(err.message);
@@ -140,7 +140,7 @@ export default function EditProductPage() {
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <div className="flex items-center mb-8">
-        <Link href="/admin/products" className="text-purple-600 hover:text-purple-800 transition-colors">
+        <Link href="/admina/products" className="text-purple-600 hover:text-purple-800 transition-colors">
           <ArrowRight className="w-6 h-6" />
         </Link>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mr-4">تعديل المنتج</h1>
@@ -196,7 +196,7 @@ export default function EditProductPage() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {/* Buttons */}
             <div className="flex justify-end gap-4 pt-4">
-              <Link href="/admin/products" className="py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">إلغاء</Link>
+              <Link href="/admina/products" className="py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">إلغاء</Link>
               <button type="submit" disabled={isSubmitting} className="py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed">{isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}</button>
             </div>
           </form>

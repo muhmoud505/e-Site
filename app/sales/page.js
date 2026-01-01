@@ -16,7 +16,9 @@ async function getDiscountedProducts() {
         (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC LIMIT 1) as image, 
         COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.sort_order ASC), '') as images,
         p.original_price as originalPrice,
-        p.price as price
+        p.price as price,
+        (SELECT COUNT(*) FROM reviews WHERE product_id = p.id) as reviewCount,
+        (SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE product_id = p.id) as averageRating
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN product_images pi ON p.id = pi.product_id
@@ -26,7 +28,7 @@ async function getDiscountedProducts() {
       LIMIT 20
     `);
     // Mocking review data that is not in the DB schema yet.
-    return rows.map(p => ({ ...p, images: p.images ? p.images.split(',') : [], rating: 4.5, reviewCount: 95 }));
+    return rows.map(p => ({ ...p, images: p.images ? p.images.split(',') : [], rating: Number(p.averageRating), reviewCount: Number(p.reviewCount) }));
   } catch (error) {
     console.error("Failed to fetch discounted products:", error);
     return [];

@@ -7,15 +7,17 @@ const PLACEHOLDER_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA
 export default function ProductCard({ product }) {
   // Assuming you'll add a 'slug' field to your products for clean URLs
   const productUrl = `/products/${product.slug || product.id}`;
+  const imageSrc = product.image || (product.images && product.images[0]) || PLACEHOLDER_IMAGE;
 
   return (
     <Link href={productUrl} className="group relative block border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-      <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-200">
+      <div className="aspect-square w-full overflow-hidden bg-gray-200 relative">
         <Image
-          src={product.image || PLACEHOLDER_IMAGE}
+          src={imageSrc}
           alt={product.name}
-          width={400}
-          height={400}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          quality={100}
           className="w-full h-full object-cover object-center group-hover:opacity-75 transition-opacity"
         />
       </div>
@@ -24,7 +26,7 @@ export default function ProductCard({ product }) {
           {product.name}
         </h3>
         {/* Interactive Star Rating */}
-        <StarRating productId={product.id} initialRating={product.rating} reviewCount={product.reviewCount} />
+        <StarRating productId={product.id} initialRating={product.rating} reviewCount={product.reviewCount || product.reviews || 0} />
         <div className="mt-2 flex items-baseline">
           {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
             <p className="text-sm text-gray-500 line-through ml-2">{parseFloat(product.originalPrice).toFixed(2)} ر.س</p>

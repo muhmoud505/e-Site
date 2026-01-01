@@ -50,7 +50,7 @@ function ProductsPage() {
     <div className="p-4 sm:p-6 md:p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">المنتجات</h1>
-        <Link href="/admin/products/new" className="flex items-center gap-2 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
+        <Link href="/admina/products/new" className="flex items-center gap-2 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
           <PlusCircle className="w-5 h-5" />
           <span>إضافة منتج جديد</span>
         </Link>
@@ -110,7 +110,7 @@ function ProductsPage() {
                 </td>
                 <td className="p-4">
                   <div className="flex gap-4">
-                    <Link href={`/admin/products/edit/${product.id}`} className="text-purple-600 hover:text-purple-800">
+                    <Link href={`/admina/products/edit/${product.id}`} className="text-purple-600 hover:text-purple-800">
                       <Edit className="w-5 h-5" />
                     </Link>
                     {/* This button now triggers the confirmation modal */}
@@ -125,7 +125,7 @@ function ProductsPage() {
         </table>
         {products && products.length === 0 && (
           <div className="text-center p-8 text-gray-500">
-            <p>لا توجد منتجات لعرضها. <Link href="/admin/products/new" className="text-purple-600 hover:underline">أضف منتجًا جديدًا</Link>.</p>
+            <p>لا توجد منتجات لعرضها. <Link href="/admina/products/new" className="text-purple-600 hover:underline">أضف منتجًا جديدًا</Link>.</p>
           </div>
         )}
       </div>

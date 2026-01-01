@@ -5,7 +5,7 @@ import StarRating from './StarRating';
 import ReviewForm from './ReviewForm';
 import { useSafeSession } from './useSafeSession';
 
-export default function ProductReviews({ product }) {
+export default function ProductReviews({ product, onReviewsUpdate }) {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,12 +20,18 @@ export default function ProductReviews({ product }) {
       }
       const data = await response.json();
       setReviews(data);
+
+      if (onReviewsUpdate) {
+        const count = data.length;
+        const avg = count > 0 ? data.reduce((acc, r) => acc + r.rating, 0) / count : 0;
+        onReviewsUpdate({ count, rating: avg });
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-  }, [product.id]);
+  }, [product.id, onReviewsUpdate]);
 
   useEffect(() => {
     fetchReviews();

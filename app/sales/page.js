@@ -40,9 +40,9 @@ export default async function SalesPage() {
 
   return (
     <div className="bg-gray-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800">العروض الخاصة</h1>
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">العروض الخاصة</h1>
           <p className="text-gray-600 mt-2">
             لا تفوت فرصة الحصول على أفضل المنتجات بأسعار مخفضة!
           </p>

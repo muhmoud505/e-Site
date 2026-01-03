@@ -20,9 +20,6 @@ export default function CheckoutClient({ addresses: initialAddresses }) {
     }
   }, [initialAddresses]);
 
-  console.log('cart' + cart);
-  
-
   if (isStoreLoading) {
     return <div className="text-center py-16">جاري تحميل السلة...</div>;
   }

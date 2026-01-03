@@ -24,12 +24,14 @@ export const metadata = {
 
 export const viewport = {
   themeColor: "#8B5CF6",
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>
+      <body className="antialiased overflow-x-hidden">
         <StoreProvider>
           <Toaster />
           <Header />

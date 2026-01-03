@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8">
         {/* Sidebar Navigation */}
         <aside className="w-full md:w-64 flex-shrink-0">
           <h2 className="text-xl font-bold mb-4">لوحة تحكم المسؤول</h2>

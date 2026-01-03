@@ -1,12 +1,12 @@
 export default function AboutPage() {
   return (
     <div className="bg-gray-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             عن متجر الأناقة
           </h1>
-          <p className="text-gray-600 text-lg mb-8">
+          <p className="text-gray-600 text-base md:text-lg mb-8">
             وجهتك الأولى لكل ما هو عصري وأنيق.
           </p>
           <div className="text-right text-gray-700 space-y-4">
@@ -16,7 +16,7 @@ export default function AboutPage() {
             <p>
               نحن نسعى جاهدين لتوفير تجربة تسوق فريدة وممتعة لعملائنا، من خلال مجموعة واسعة من المنتجات التي تلبي جميع الأذواق والاحتياجات.
             </p>
-            <h2 className="text-2xl font-semibold pt-4">مهمتنا</h2>
+            <h2 className="text-xl md:text-2xl font-semibold pt-4">مهمتنا</h2>
             <p>
               مهمتنا هي تمكين الأفراد من التعبير عن أنفسهم بثقة من خلال الأزياء التي يرتدونها. نحن نختار كل قطعة بعناية فائقة لضمان أنها لا تواكب الموضة فحسب، بل تتميز أيضًا بالراحة والجودة.
             </p>
@@ -26,4 +26,3 @@ export default function AboutPage() {
     </div>
   );
 }
-

@@ -9,13 +9,6 @@ import LogoutButton from './LogoutButton';
 const HeaderIcons = ({ session }) => {
   const router = useRouter();
   const { cart, wishlist } = useStore();
-  const f=()=>{
-    console.log('befor go');
-    
-    window.location.href = '/admina';
-    console.log('after go');
-
-  }
 
   return (
     <div className="flex items-center space-x-5 order-2 md:order-3">
@@ -35,10 +28,10 @@ const HeaderIcons = ({ session }) => {
       {session ? (
         <>
           {session.role === 'admin' ? (
-            <button onClick={f} className="flex items-center gap-2 cursor-pointer bg-transparent border-none">
+            <Link href="/admina" className="flex items-center gap-2 cursor-pointer bg-transparent border-none">
               <User className="w-6 h-6 text-purple-600" />
               <span className="hidden sm:inline font-semibold text-purple-700">لوحة التحكم</span>
-            </button>
+            </Link>
           ) : (
             <Link href="/dashboard" className="flex items-center gap-2">
               <User className="w-6 h-6 text-gray-600" />

@@ -48,9 +48,9 @@ function ProductsPage() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">المنتجات</h1>
-        <Link href="/admina/products/new" className="flex items-center gap-2 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
+        <Link href="/admina/products/new" className="w-full sm:w-auto justify-center flex items-center gap-2 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
           <PlusCircle className="w-5 h-5" />
           <span>إضافة منتج جديد</span>
         </Link>

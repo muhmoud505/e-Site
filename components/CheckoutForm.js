@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useStore } from "@/context/StoreContext";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 
 const CheckoutForm = ({ addresses }) => {
-  console.log(addresses);
-  
-  const { cart, clearCart } = useStore();
-  const router = useRouter();
+  const { cart } = useStore();
   const [shippingDetails, setShippingDetails] = useState({
     firstName: "",
     lastName: "",
@@ -98,8 +94,8 @@ const CheckoutForm = ({ addresses }) => {
     }
   };
   return (
-    <div className="lg:col-span-2 bg-white p-8 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div className="lg:col-span-2 bg-white p-4 md:p-8 rounded-lg shadow-md">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">
         إتمام عملية الدفع
       </h1>
 

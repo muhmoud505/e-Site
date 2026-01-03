@@ -58,7 +58,7 @@ export default function AdminUsersTable({ users }) {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 text-right">
           <thead className="bg-gray-50">
             <tr>

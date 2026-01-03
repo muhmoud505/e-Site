@@ -41,8 +41,8 @@ const OrderSummary = ({ cart, totalCartPrice }) => {
     : cart.reduce((acc, item) => acc + (safeParseFloat(item.price) * safeParseInt(item.quantity)), 0).toFixed(2);
 
   return (
-    <div className="lg:col-span-1 bg-white p-8 rounded-lg shadow-md h-fit">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
+    <div className="lg:col-span-1 bg-white p-4 md:p-8 rounded-lg shadow-md h-fit">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
         ملخص الطلب <span className="text-sm font-normal text-gray-500">({itemCount} منتجات)</span>
       </h2>
       <div className="space-y-4">

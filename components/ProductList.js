@@ -12,10 +12,10 @@ export default function ProductList({ products, categories = [] }) {
 
   return (
     <div>
-      <div className="flex justify-center space-x-4 space-x-reverse mb-8">
-        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full font-semibold ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-200'}`}>الكل</button>
+      <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full font-semibold transition-colors ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>الكل</button>
         {categories.map(category => (
-          <button key={category.id} onClick={() => setFilter(category.name)} className={`px-4 py-2 rounded-full font-semibold ${filter === category.name ? 'bg-purple-600 text-white' : 'bg-gray-200'}`}>
+          <button key={category.id} onClick={() => setFilter(category.name)} className={`px-4 py-2 rounded-full font-semibold transition-colors ${filter === category.name ? 'bg-purple-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>
             {category.name}
           </button>
         ))}

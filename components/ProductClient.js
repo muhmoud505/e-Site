@@ -35,7 +35,7 @@ const ProductClient = ({ product }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
         {/* Image Gallery */}
         <div>
           <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
@@ -70,14 +70,14 @@ const ProductClient = ({ product }) => {
 
         {/* Product Details */}
         <div>
-          <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-4">{product.name}</h1>
           <div className="mb-4">
             <StarRating initialRating={rating} reviewCount={reviewCount} />
           </div>
-          <p className="text-gray-700 text-lg mb-6">{product.description || "لا يوجد وصف متاح لهذا المنتج."}</p>
+          <p className="text-gray-700 text-base md:text-lg mb-6">{product.description || "لا يوجد وصف متاح لهذا المنتج."}</p>
           
           <div className="mb-6">
-            <span className="text-4xl font-bold text-purple-600">{product.price} ريال</span>
+            <span className="text-3xl md:text-4xl font-bold text-purple-600">{product.price} ريال</span>
             {product.originalPrice && product.originalPrice > product.price && (
               <span className="text-xl text-gray-500 line-through mr-3">
                 {product.originalPrice} ريال

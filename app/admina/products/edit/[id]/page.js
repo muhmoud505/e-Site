@@ -146,7 +146,7 @@ export default function EditProductPage() {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mr-4">تعديل المنتج</h1>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+      <div className="max-w-4xl mx-auto bg-white p-4 md:p-8 rounded-lg shadow-md">
         {formData && (
           <form onSubmit={handleSubmit} className="space-y-6 text-right">
             {/* Form fields are identical to new/page.js, just with value={formData.field} */}
@@ -195,9 +195,9 @@ export default function EditProductPage() {
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {/* Buttons */}
-            <div className="flex justify-end gap-4 pt-4">
-              <Link href="/admina/products" className="py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">إلغاء</Link>
-              <button type="submit" disabled={isSubmitting} className="py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed">{isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}</button>
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4">
+              <Link href="/admina/products" className="w-full sm:w-auto text-center py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">إلغاء</Link>
+              <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed">{isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}</button>
             </div>
           </form>
         )}

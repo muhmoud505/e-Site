@@ -50,17 +50,17 @@ export default async function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20">
+      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="text-center md:text-right">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">تسوق أحدث صيحات الموضة</h1>
-              <p className="text-lg md:text-xl mb-8">اكتشف مجموعتنا الحصرية من المنتجات عالية الجودة بأسعار منافسة</p>
+              <h1 className="text-3xl md:text-5xl font-bold mb-6">تسوق أحدث صيحات الموضة</h1>
+              <p className="text-base md:text-xl mb-8">اكتشف مجموعتنا الحصرية من المنتجات عالية الجودة بأسعار منافسة</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <a href="#products" className="bg-yellow-400 text-purple-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 text-center">
+                <a href="#products" className="bg-yellow-400 text-purple-900 px-6 py-3 md:px-8 md:py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 text-center transition-colors">
                   تسوق الآن
                 </a>
-                <Link href="/sales" className="border-2 border-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg font-bold text-lg text-center">
+                <Link href="/sales" className="border-2 border-white hover:bg-white hover:text-purple-600 px-6 py-3 md:px-8 md:py-4 rounded-lg font-bold text-lg text-center transition-colors">
                   العروض الخاصة
                 </Link>
               </div>
@@ -77,10 +77,10 @@ export default async function Home() {
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-16">
+      <section id="products" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800">المنتجات المميزة</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">المنتجات المميزة</h2>
           </div>
           <ProductList products={products} categories={categories} />
         </div>

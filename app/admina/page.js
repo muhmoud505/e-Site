@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Users Card */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">إجمالي المستخدمين</p>
@@ -39,7 +39,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Products Card */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">إجمالي المنتجات</p>
@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Orders Card */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">إجمالي الطلبات</p>
@@ -65,7 +65,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Revenue Card */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">إجمالي المبيعات</p>

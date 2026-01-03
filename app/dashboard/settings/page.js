@@ -14,13 +14,13 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">الإعدادات</h1>
-      <div className="space-y-10">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">الإعدادات</h1>
+      <div className="space-y-8 md:space-y-10">
         <div>
           <h2 className="text-xl font-semibold mb-4">المعلومات الشخصية</h2>
           <SettingsForm user={user} />
         </div>
-        <div className="border-t border-gray-200 pt-10">
+        <div className="border-t border-gray-200 pt-8 md:pt-10">
           <h2 className="text-xl font-semibold mb-4">تغيير كلمة المرور</h2>
           <PasswordForm />
         </div>

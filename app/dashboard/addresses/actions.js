@@ -112,24 +112,16 @@ export async function getAddresses() {
   noStore();
   const session = await getSession();
 
-  // --- DEBUGGING STEP ---
-  // Check your server terminal (where you run `npm run dev`) for this log.
-  console.log('Fetching addresses for session:', session);
-
   if (!session || !session.id) {
     // Return empty array if user is not logged in
     return [];
   }
 
   try {
-    console.log(session);
-    
     const [addresses] = await db.query(
       'SELECT id, country, city, street, building_number, is_default FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC',
       [session.id]
     );
-    console.log(addresses);
-    
     return addresses;
   } catch (error) {
     console.error('Failed to fetch addresses:', error);

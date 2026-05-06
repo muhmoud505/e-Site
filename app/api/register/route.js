@@ -2,93 +2,126 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { SignJWT } from 'jose';
-import db from '../../../lib/db';
-import { cookies } from 'next/headers';
+import db from '@/lib/db';
 
-/**
- * Handles POST requests to /api/register
- * @param {import('next/server').NextRequest} request
- */
-export async function POST(request) {
-  // Define a schema for validation using Zod
-  const registerSchema = z.object({
-    fullname: z.string().min(1, { message: 'Full name is required.' }),
-    email: z.string().email({ message: 'Invalid email address.' }),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters long.' }),
+// 🟢 Stronger password validation
+const passwordSchema = z.string()
+    .min(8, { message: 'Password must be at least 8 characters.' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter.' })
+    .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter.' })
+    .regex(/[0-9]/, { message: 'Password must contain at least one number.' })
+    .regex(/[!@#$%^&*]/, { message: 'Password must contain at least one special character.' });
+
+const registerSchema = z.object({
+    fullname: z.string().min(1).max(100),
+    email: z.string().email().max(255),
+    password: passwordSchema,
     gender: z.enum(['male', 'female', 'other']),
-    mobile: z.string().min(1, { message: 'Mobile number is required.' }),
-  });
+    mobile: z.string().min(1).max(20),
+});
 
-  try {
-    const body = await request.json();
-    const validation = registerSchema.safeParse(body);
-
-    if (!validation.success) {
-      return NextResponse.json({ message: 'Invalid input.', errors: validation.error.flatten().fieldErrors }, { status: 400 });
-    }
-
-    const { fullname, email, password, gender, mobile } = validation.data;
-
-    // Check if the user already exists in the database.
-    const [existingUsers] = await db.query('SELECT id FROM users WHERE email = ?', [email])
-
-    if (existingUsers.length > 0) {
-      return NextResponse.json({ message: 'User with this email already exists.' }, { status: 409, statusText: 'Conflict' });
-    }
-
-    // It's good practice to use an environment variable for the salt rounds.
-    const saltRounds = process.env.BCRYPT_SALT_ROUNDS ? parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) : 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+// 🟢 Simple in-memory rate limiter
+const rateLimitMap = new Map();
+function checkRateLimit(key, maxAttempts = 3, windowMs = 15 * 60 * 1000) {
+    const now = Date.now();
+    const record = rateLimitMap.get(key) || { attempts: 0, resetAt: now + windowMs };
     
-    // Insert the new user into the database
-    const [result] = await db.query(
-      'INSERT INTO users (fullname, email, password, gender, mobile, role) VALUES (?, ?, ?, ?, ?, ?)',
-      [fullname, email, passwordHash, gender, mobile, 'user']
-    );
-
-    const newUserId = result.insertId;
-
-    // Fetch the newly created user's data (excluding password) to create the session
-    const [[newUser]] = await db.query(
-      'SELECT id, fullname, email, role FROM users WHERE id = ?',
-      [newUserId]
-    );
-
-    if (!newUser) {
-      return NextResponse.json({ message: 'Failed to retrieve user after creation.' }, { status: 500 });
+    if (now > record.resetAt) {
+        record.attempts = 1;
+        record.resetAt = now + windowMs;
+    } else {
+        record.attempts++;
     }
+    
+    rateLimitMap.set(key, record);
+    return record.attempts > maxAttempts;
+}
 
-    // --- Create a JWT session token ---
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const alg = 'HS256';
+export async function POST(request) {
+    try {
+        // 🟢 Rate limiting
+        const ip = request.headers.get('x-forwarded-for') || 'unknown';
+        if (checkRateLimit(`register:${ip}`)) {
+            return NextResponse.json(
+                { message: 'Too many registration attempts. Please try again later.' },
+                { status: 429 }
+            );
+        }
 
-    const sessionToken = await new SignJWT(newUser)
-      .setProtectedHeader({ alg })
-      .setIssuedAt()
-      .setExpirationTime('30d') // Set session to expire in 30 days
-      .sign(secret);
+        const body = await request.json();
+        const validation = registerSchema.safeParse(body);
 
-    // Create the response first
-    const response = NextResponse.json({ user: newUser }, { status: 201 });
+        if (!validation.success) {
+            // 🟢 Don't expose field errors to client
+            console.log('Validation failed:', validation.error.flatten().fieldErrors);
+            return NextResponse.json(
+                { message: 'Invalid input. Please check your information.' },
+                { status: 400 }
+            );
+        }
 
-    // Set the session token in an HTTP-only cookie
-    response.cookies.set('session', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: '/',
-    });
+        const { fullname, email, password, gender, mobile } = validation.data;
 
-    return response;
-  } catch (error) {
-    console.error('Registration error:', error);
-    // Check for specific database errors, like unique constraint violations
-    if (error.code === 'ER_DUP_ENTRY') {
-        return NextResponse.json({ message: 'User with this email already exists.' }, { status: 409 });
+        // 🟢 Prevent email enumeration: always return same message
+        const [existingUsers] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (existingUsers.length > 0) {
+            // 🟢 Same 409 status but with generic message (or even 201 with fake success)
+            return NextResponse.json(
+                { message: 'If this email is not registered, an account has been created.' },
+                { status: 201 }  // Pretend success to confuse attackers
+            );
+        }
+
+        const saltRounds = 12; // 🟢 Stronger work factor (default was 10)
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        const [result] = await db.query(
+            'INSERT INTO users (fullname, email, password, gender, mobile, role) VALUES (?, ?, ?, ?, ?, ?)',
+            [fullname, email, passwordHash, gender, mobile, 'user']
+        );
+
+        const newUserId = result.insertId;
+
+        // 🟢 Create JWT with MINIMAL data (only user ID)
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+        const sessionToken = await new SignJWT({ sub: newUserId })
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('1h')  // 🟢 Shorter expiry: 1 hour instead of 30 days
+            .sign(secret);
+
+        // 🟢 Create refresh token for longer sessions
+        const refreshToken = crypto.randomUUID();
+        await db.query(
+            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))',
+            [newUserId, refreshToken]
+        );
+
+        const [[newUser]] = await db.query(
+            'SELECT id, fullname, email, role FROM users WHERE id = ?',
+            [newUserId]
+        );
+
+        const response = NextResponse.json(
+            { user: { id: newUser.id, fullname: newUser.fullname, email: newUser.email } },
+            { status: 201 }
+        );
+
+        response.cookies.set('session', sessionToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',  // 🟢 Added CSRF protection
+            maxAge: 3600,  // 🟢 1 hour
+            path: '/',
+        });
+
+        return response;
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        return NextResponse.json(
+            { message: 'An internal server error occurred.' },
+            { status: 500 }
+        );
     }
-    return NextResponse.json(
-      { message: 'An internal server error occurred.' },
-      { status: 500 }
-    );
-  }
 }

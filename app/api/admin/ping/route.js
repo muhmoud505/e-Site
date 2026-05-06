@@ -1,22 +1,32 @@
-import { NextResponse } from "next/server";import {exec}from 'child_process';
-export async function POST(request){
+import { NextResponse } from "next/server";
+import { exec } from "child_process";
+
+export async function POST(request) {
     try {
-        const {ip}=await request.json();
-                // 🔴 DELIBERATELY VULNERABLE - Command injection!
-                const command=`ping -c 4 ${ip}`;
-                console.log('🔴 Executing:', command);
-                exec(command,(error,stdout,stderr)=>{
-                    if(error){
-                        return NextResponse.json({
-                            output:stderr || error.message
-                        }, {status:400});
-                    }
-                    return NextResponse.json({
-                        output:stdout
-                    }, {status:200});
-                })
-        
+        const { ip } = await request.json();
+
+        // 🔴 VULNERABLE: Command injection possible
+        const command = `ping -n 4 ${ip}`;
+
+        console.log('🔴 Executing:', command);
+
+        // Wrap exec in a Promise so Next.js can await it
+        const output = await new Promise((resolve, reject) => {
+            exec(command, (error, stdout, stderr) => {
+                if (error) {
+                    resolve(stderr || error.message);
+                } else {
+                    resolve(stdout);
+                }
+            });
+        });
+
+        return NextResponse.json({ output });
+
     } catch (error) {
-        return NextResponse.json({message:"Error pinging"}, {status:500})
+        return NextResponse.json(
+            { error: error.message },
+            { status: 500 }
+        );
     }
 }

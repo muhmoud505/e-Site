@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+    <product>
+        <name>Test Product</name>
+        <price>99.99</price>
+    </product>
+</products>
